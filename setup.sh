@@ -1,5 +1,4 @@
-#!/bin/bash
-
+#!/bin/sh
 ################################################################################
 # Copyright (c) [2023] [Ravindu Deshan]
 #
@@ -7,10 +6,9 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
 ################################################################################
-
+rm -rf "$(pwd)/Scamsung"
 clone() {
-    rm -rf "$PWD/Scamsung"
-    git clone https://github.com/ravindu644/Scamsung.git
+    git clone https://github.com/ravindu644/Scamsung.git > /dev/null 2>&1
     cd Scamsung
     chmod +x -R bin/
     chmod +x scamsung.sh
