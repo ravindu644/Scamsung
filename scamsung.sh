@@ -129,7 +129,8 @@ super_extract(){
 
 	if [ "$PARTITION_SCHEME" == 1 ]; then
 		echo -e "\033[1;31m[+]Converting the super image to a RAW image...\n\033[0m"
-		"$WDIR/bin/simg2img" super.img super.img.raw
+		chmod +x "$WDIR/Scamsung/bin/simg2img"
+		"$WDIR/Scamsung/bin/simg2img" super.img super.img.raw
 		rm super.img
 		echo -e "\033[1;32m[i]Conversion completed!\n\033[0m"
 		echo -e "\033[1;32m[i]Your super partition size is : $(stat -c '%n %s' super.img.raw) bytes\n\033[0m"
