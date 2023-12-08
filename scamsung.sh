@@ -127,8 +127,8 @@ super_extract(){
 		echo -e "\033[1;32m[i]Conversion completed!\n\033[0m"
 		echo -e "\033[1;32m[i]Your super partition size is : $(stat -c '%n %s' super.img.raw) bytes\n\033[0m"
 		echo -e "\033[1;31m[+]Extracting system, vendor, product, odm partitions from super.img.raw...\n\033[0m"
-		chmod +x "$WDIR/bin/lpunpack"
-		"$WDIR/bin/lpunpack" super.img.raw && rm super.img.raw
+		chmod +x "$WDIR/Scamsung/bin/lpunpack"
+		"$WDIR/Scamsung/bin/lpunpack" super.img.raw && rm super.img.raw
 		echo -e "\n\033[1;32m[i]Extraction completed!\033[0m"
 	else
 		echo -e "\033[1;32m[i]Your System partition size is : $(stat -c '%n %s' system.img) bytes\n\033[0m"
