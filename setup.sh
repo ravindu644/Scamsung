@@ -8,11 +8,11 @@
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
 ################################################################################
 
-clone(){
-	rm -rf $pwd/Scamsung
-	git clone https://github.com/ravindu644/Scamsung.git; cd Scamsung
-	chmod +x -R bin/
-	chmod +x scamsung.sh
+clone() {
+    rm -rf "$PWD/Scamsung"
+    git clone https://github.com/ravindu644/Scamsung.git
+    cd Scamsung
+    chmod +x -R bin/
+    chmod +x scamsung.sh
 }
-
 clone
