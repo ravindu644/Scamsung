@@ -103,6 +103,7 @@ base_files(){
 		tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img dt.img; rm *.img #cleaning
 	fi
 	zip "${BASE_TAR_NAME}.zip" "$BASE_TAR_NAME"
+	rm "$BASE_TAR_NAME"
 	echo -e "\033[1;32m[i] Zip file created: ${BASE_TAR_NAME}.zip\033[0m"
 }
 
