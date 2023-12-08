@@ -18,8 +18,8 @@ dependencies() {
 	#sudo apt install simg2img > /dev/null
 	compiling_lz4(){
 		echo -e "\t\033[1;31mCompiling lz4...\033[0m\n"
-		git clone https://github.com/lz4/lz4.git > /dev/null
-		cd lz4 && make > /dev/null && make install > /dev/null
+		git clone https://github.com/lz4/lz4.git > > /dev/null 2>&1
+		cd lz4 && make > /dev/null && make install > > /dev/null 2>&1
 		cd "$WDIR"
 	}
 	compiling_lz4
