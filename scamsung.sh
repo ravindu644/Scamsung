@@ -14,8 +14,8 @@ banner (){
 }
 
 dependencies() {
-	sudo apt update > /dev/null
-	sudo apt install simg2img > /dev/null
+	#sudo apt update > /dev/null
+	#sudo apt install simg2img > /dev/null
 	compiling_lz4(){
 		echo -e "\t\033[1;31mCompiling lz4...\033[0m\n"
 		git clone https://github.com/lz4/lz4.git > /dev/null
