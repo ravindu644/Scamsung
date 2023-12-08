@@ -73,8 +73,8 @@ downloading() {
         echo -e "\033[1;32m[i]Download Completed..!\033[0m"
     else
         # Print an error message and exit the script
-        echo -e "\033[1;31m[x]Error: Download failed.\033[0m"
-        exit 1
+        echo -e "\033[1;31m[x]Error: Download failed. Enter a valid link :\033[0m"
+        downloading
     fi
 }
 
