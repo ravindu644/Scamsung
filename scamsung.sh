@@ -160,7 +160,7 @@ repacking(){
 			compression_method_input
 		fi
 	}
-
+	compression_method_input
 	echo -e "\033[1;32m[i]Firmware extraction for device ${DEVICE_NAME} is completed!"
 }
 
