@@ -134,7 +134,7 @@ super_extract(){
 }
 
 repacking(){
-	echo -e "\033[1;31m[+]Creating System zip file...\n\033[0m"
+	echo -e "\033[1;31m[+]Creating System TAR file...\n\033[0m"
 	TAR_NAME="System - $DEVICE_NAME.tar"
 	if [ "$PARTITION_SCHEME" == 1 ]; then
 		tar cf "$TAR_NAME" system.img vendor.img odm.img product.img
