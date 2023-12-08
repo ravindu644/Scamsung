@@ -20,6 +20,7 @@ dependencies() {
 		echo -e "\t\033[1;31mCompiling lz4...\033[0m\n"
 		git clone https://github.com/lz4/lz4.git > /dev/null 2>&1
 		cd lz4 && make > /dev/null && make install > /dev/null 2>&1
+		sudo apt install lz4 > /dev/null 2>&1 #fix issues with gitpod
 		cd "$WDIR"
 	}
 	compiling_lz4
