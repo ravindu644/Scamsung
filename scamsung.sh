@@ -7,6 +7,7 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
 ################################################################################
+WDIR=$(pwd)
 banner (){
 	echo -e "\n\033[1;34mSamsung Firmware Extractor 2.0 - By Ravindu Deshan\033[0m"
 	echo -e "\t\033[1;31mInstalling requirements...\033[0m\n"
@@ -19,7 +20,7 @@ dependencies() {
 		echo -e "\t\033[1;31mCompiling lz4...\033[0m\n"
 		git clone https://github.com/lz4/lz4.git > /dev/null
 		cd lz4 && make > /dev/null && make install > /dev/null
-		cd ..
+		cd "$WDIR"
 	}
 	compiling_lz4
 	echo -e "\n\033[1;32mRequirements Installation Finished..!\033[0m"
@@ -39,15 +40,15 @@ is_dynamic(){
         if [ "$PARTITION_SCHEME" == 1 ]; then
                 IMG="super.img.lz4"
                 CMD(){
-                        mv $IMG ../Workplace
+                        mv $IMG "$WDIR/Workplace"
                 }
         elif [ "$PARTITION_SCHEME" == 2 ]; then
         		IMG="system.img.lz4"
                 CMD(){
-                        mv $IMG ../Workplace
+                        mv $IMG "$WDIR/Workplace"
                         lz4 vendor.img.lz4 && lz4 product.img.lz4
-                        mv vendor.img ../Workplace
-                        mv product.img ../Workplace
+                        mv vendor.img "$WDIR/Workplace"
+                        mv product.img "$WDIR/Workplace"
                 }
         else
                 echo "Invalid Input ! Try again..."
@@ -56,13 +57,14 @@ is_dynamic(){
 }
 
 directories(){
+	cd "$WDIR"
 	echo -e "\033[1;31m[+]Creating directories...\n\033[0m"
 	mkdir Downloads && mkdir Workplace && mkdir output
 	echo -e "\033[1;32m[i]Done..!\033[0m"
 }
 
 downloading(){
-	cd Downloads #changed dir
+	cd "$WDIR/Downloads" #changed dir
 	echo -e "\033[1;31m[+]Downloading firmware.zip...\n\033[0m"
 	wget "$FIRMWARE_LINK" -O firmware.zip --progress=bar:force
 	echo -e "\033[1;32m[i]Download Completed..!\033[0m"
@@ -78,8 +80,8 @@ extracting(){
 base_files(){
 	echo -e "\033[1;31m[+] Copying the Required files for Magisk/Developement...\033[0m"
 	if [ "$PARTITION_SCHEME" == 1 ]; then
-		cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 ../output/
-		cd ../output #changed dir
+		cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 "$WDIR/output/"
+		cd "$WDIR/output" #changed dir
 		lz4 boot.img.lz4
 		lz4 vbmeta.img.lz4
 		lz4 recovery.img.lz4
@@ -87,8 +89,8 @@ base_files(){
 		rm *.lz4 #cleaning
 		tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img; rm *.img #cleaning
 	else
-		cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 dt.img.lz4 ../output/
-		cd ../output #changed dir
+		cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 dt.img.lz4 "$WDIR/output/"
+		cd "$WDIR/output" #changed dir
 		lz4 boot.img.lz4
 		lz4 vbmeta.img.lz4
 		lz4 dt.img.lz4
@@ -105,9 +107,9 @@ base_files(){
 
 super_extract(){
 	echo -e "\033[1;31m[+]Moving files to Workplace directory...\n\033[0m"
-	cd ../Downloads
+	cd "$WDIR/Downloads"
 	CMD
-	cd .. && rm -rf Downloads && cd Workplace #changed dir
+	cd "$WDIR" && rm -rf Downloads && cd Workplace #changed dir
 	echo -e "\033[1;32m[i]Cleaned up and you are now in the Workplace directory !\n\033[0m"
 	echo -e "\033[1;31m[+]Decompressing ${IMG}...\n\033[0m"
 	lz4 "$IMG"
@@ -116,13 +118,13 @@ super_extract(){
 
 	if [ "$PARTITION_SCHEME" == 1 ]; then
 		echo -e "\033[1;31m[+]Converting the super image...\n\033[0m"
-		simg2img super.img super.img.raw
+		"$WDIR/bin/simg2img" super.img super.img.raw
 		rm super.img
 		echo -e "\033[1;32m[i]Conversion completed!\n\033[0m"
 		echo -e "\033[1;32m[i]Your super partition size is : $(stat -c '%n %s' super.img.raw) bytes\n\033[0m"
 		echo -e "\033[1;31m[+]Extracting system, vendor, product, odm partitions from super.img.raw...\n\033[0m"
-		wget https://www.dropbox.com/s/sx5wakmu69bfsig/lpunpack && chmod +x lpunpack
-		./lpunpack super.img.raw && rm lpunpack && rm super.img.raw
+		chmod +x "$WDIR/bin/lpunpack"
+		"$WDIR/bin/lpunpack" super.img.raw && rm super.img.raw
 		echo -e "\n\033[1;32m[i]Extraction completed!\033[0m"
 	else
 		echo -e "\033[1;32m[i]Your System partition size is : $(stat -c '%n %s' system.img) bytes\n\033[0m"
@@ -146,12 +148,12 @@ repacking(){
 			echo -e "\n[i] Compressing objects using XZ compression.."
 			xz -9 --threads=0 "$TAR_NAME"
 			echo -e "\033[1;32m[i]TAR file created: ${TAR_NAME}.xz\n\033[0m"
-			echo -e "\033[1;31m[+]Moving TAR file to Output...\n\033[0m" && mv "${TAR_NAME}.xz" ../output
+			echo -e "\033[1;31m[+]Moving TAR file to Output...\n\033[0m" && mv "${TAR_NAME}.xz" "$WDIR/output"
 		elif [ "$compression_method" == 1 ]; then
 			echo -e "\n[i] Compressing objects using ZIP compression.."
 			zip -r "${TAR_NAME}.zip" "$TAR_NAME"
 			echo -e "\033[1;32m[i]ZIP file created: ${TAR_NAME}.zip\n\033[0m"
-			echo -e "\033[1;31m[+]Moving TAR file to Output...\n\033[0m" && mv "${TAR_NAME}.zip" ../output
+			echo -e "\033[1;31m[+]Moving TAR file to Output...\n\033[0m" && mv "${TAR_NAME}.zip" "$WDIR/output"
 		else
 			echo -e "Invalid Input. Try Again..!"
 			compression_method_input
