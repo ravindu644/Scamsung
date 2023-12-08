@@ -81,6 +81,7 @@ extracting(){
 base_files(){
 	echo -e "\033[1;31m[+] Copying the Required files for Magisk/Developement...\033[0m"
 	if [ "$PARTITION_SCHEME" == 1 ]; then
+		cd "$WDIR/Downloads" #changed dir
 		cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 "$WDIR/output/"
 		cd "$WDIR/output" #changed dir
 		lz4 boot.img.lz4
@@ -90,6 +91,7 @@ base_files(){
 		rm *.lz4 #cleaning
 		tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img; rm *.img #cleaning
 	else
+		cd "$WDIR/Downloads" #changed dir
 		cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 dt.img.lz4 "$WDIR/output/"
 		cd "$WDIR/output" #changed dir
 		lz4 boot.img.lz4
@@ -110,7 +112,7 @@ super_extract(){
 	echo -e "\033[1;31m[+]Moving files to Workplace directory...\n\033[0m"
 	cd "$WDIR/Downloads"
 	CMD
-	cd "$WDIR" && rm -rf Downloads && cd Workplace #changed dir
+	cd "$WDIR/Workplace" #changed dir
 	echo -e "\033[1;32m[i]Cleaned up and you are now in the Workplace directory !\n\033[0m"
 	echo -e "\033[1;31m[+]Decompressing ${IMG}...\n\033[0m"
 	lz4 "$IMG"
@@ -118,7 +120,7 @@ super_extract(){
 	echo -e "\n\033[1;32m[i]Decompression completed!\n\033[0m"
 
 	if [ "$PARTITION_SCHEME" == 1 ]; then
-		echo -e "\033[1;31m[+]Converting the super image...\n\033[0m"
+		echo -e "\033[1;31m[+]Converting the super image to a RAW image...\n\033[0m"
 		"$WDIR/bin/simg2img" super.img super.img.raw
 		rm super.img
 		echo -e "\033[1;32m[i]Conversion completed!\n\033[0m"
