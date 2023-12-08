@@ -64,11 +64,18 @@ directories(){
 	echo -e "\033[1;32m[i]Done..!\033[0m"
 }
 
-downloading(){
-	cd "$WDIR/Downloads" #changed dir
-	echo -e "\033[1;31m[+]Downloading firmware.zip...\n\033[0m"
-	wget "$FIRMWARE_LINK" -O firmware.zip --progress=bar:force
-	echo -e "\033[1;32m[i]Download Completed..!\033[0m"
+downloading() {
+    cd "$WDIR/Downloads" # Change directory
+    echo -e "\033[1;31m[+]Downloading firmware.zip...\n\033[0m"
+    
+    # Use wget with --tries to limit the number of retries
+    if wget "$FIRMWARE_LINK" -O firmware.zip --progress=bar:force --tries=3; then
+        echo -e "\033[1;32m[i]Download Completed..!\033[0m"
+    else
+        # Print an error message and exit the script
+        echo -e "\033[1;31m[x]Error: Download failed.\033[0m"
+        exit 1
+    fi
 }
 
 extracting(){
