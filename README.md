@@ -7,4 +7,4 @@ export setup_dir=$(pwd); curl -LSs https://raw.githubusercontent.com/ravindu644/
 ```
 ## or
 
-## Run in Google Colab : [![Colab for images](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ravindu644/Scamsung/blob/Samsung/scamsung.sh)
+## Run in Google Colab : [![Colab for images](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ravindu644/Scamsung/blob/Samsung/Scamsung.ipynb)
