@@ -11,7 +11,7 @@
 clone(){
 	git clone https://github.com/ravindu644/Scamsung.git; cd Scamsung
 	chmod +x -R bin/
-	bash Scamsung.sh
+	bash scamsung.sh
 }
 
 clone
