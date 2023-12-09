@@ -40,7 +40,7 @@ get_link(){
 directories(){
 	cd "$WDIR"
 	echo -e "\033[1;31m[+]Creating directories...\n\033[0m"
-	mkdir Downloads Workplace output super
+	mkdir Downloads Workplace output super recovery
 	echo -e "\033[1;32m[i]Done..!\033[0m"
 }
 
@@ -61,6 +61,7 @@ extracting(){
 	echo -e "\033[1;31m[+]Extracting the firmware Zip...\n\033[0m"
 	unzip firmware.zip && rm firmware.zip
 	tar -xf AP*.tar.md5 && tar -xf CSC*.tar.md5 && rm *.tar.md5 #extract and clean
+	cp recovery.img.lz4 "$WDIR/recovery"
 	echo -e "\n\033[1;32m[i]Zip Extraction Completed..!\033[0m"
 }
 
@@ -91,14 +92,73 @@ is_dynamic(){
         fi
 }
 
+recovery_patch(){
+	echo -e "\033[1;31m[+] Patching the recovery to get Fastbootd back..!\n\033[0m"
+	chmod a+x $WDIR/bin/*
+	cd "$WDIR" && mkdir recovery && cd recovery
+	cp "$WDIR/Downloads/recovery.img.lz4" .
+	if [ -f recovery.img.lz4 ];then
+		lz4 -B6 --content-size -f recovery.img.lz4 recovery.img
+	fi
+
+	off=$(grep -ab -o SEANDROIDENFORCE recovery.img |tail -n 1 |cut -d : -f 1)
+	dd if=recovery.img of=r.img bs=4k count=$off iflag=count_bytes
+
+	if [ ! -f phh.pem ];then
+	    openssl genrsa -f4 -out phh.pem 4096
+	fi
+
+	mkdir unpack
+	cd unpack
+	$WDIR/bin/magiskboot unpack ../r.img
+	$WDIR/bin/magiskboot cpio ramdisk.cpio extract
+	# Reverse fastbootd ENG mode check
+	$WDIR/bin/magiskboot hexpatch system/bin/recovery e10313aaf40300aa6ecc009420010034 e10313aaf40300aa6ecc0094 # 20 01 00 35
+	$WDIR/bin/magiskboot hexpatch system/bin/recovery eec3009420010034 eec3009420010035
+	$WDIR/bin/magiskboot hexpatch system/bin/recovery 3ad3009420010034 3ad3009420010035
+	$WDIR/bin/magiskboot hexpatch system/bin/recovery 50c0009420010034 50c0009420010035
+	$WDIR/bin/magiskboot hexpatch system/bin/recovery 080109aae80000b4 080109aae80000b5
+	$WDIR/bin/magiskboot hexpatch system/bin/recovery 20f0a6ef38b1681c 20f0a6ef38b9681c
+	$WDIR/bin/magiskboot hexpatch system/bin/recovery 23f03aed38b1681c 23f03aed38b9681c
+	$WDIR/bin/magiskboot hexpatch system/bin/recovery 20f09eef38b1681c 20f09eef38b9681c
+	$WDIR/bin/magiskboot hexpatch system/bin/recovery 26f0ceec30b1681c 26f0ceec30b9681c
+	$WDIR/bin/magiskboot hexpatch system/bin/recovery 24f0fcee30b1681c 24f0fcee30b9681c
+	$WDIR/bin/magiskboot hexpatch system/bin/recovery 27f02eeb30b1681c 27f02eeb30b9681c
+	$WDIR/bin/magiskboot hexpatch system/bin/recovery b4f082ee28b1701c b4f082ee28b970c1
+	$WDIR/bin/magiskboot hexpatch system/bin/recovery 9ef0f4ec28b1701c 9ef0f4ec28b9701c
+	$WDIR/bin/magiskboot  cpio ramdisk.cpio 'add 0755 system/bin/recovery system/bin/recovery'
+	$WDIR/bin/magiskboot  repack ../r.img new-boot.img
+	mv new-boot.img ../recovery-patched.img; cd ..
+
+        python3 "$WDIR/bin/avbtool" extract_public_key --key phh.pem --output phh.pub.bin
+        python3 "$WDIR/bin/avbtool" add_hash_footer --partition_name recovery --partition_size $(wc -c recovery.img |cut -f 1 -d ' ') --image recovery-patched.img --key phh.pem --algorithm SHA256_RSA4096
+        mv recovery-patched.img "$WDIR/output/recovery.img"
+        #tar cvf fastbootd-recovery.tar "$WDIR/output/recovery.img"
+        echo -e "\033[1;32m\n[i] Patching Done..!"
+
+}
+
 base_files(){
-	echo -e "\033[1;31m[+] Copying the Required files for Magisk/Developement...\033[0m"
+	echo -e "\033[1;31m[+] Copying the Required files for Magisk/Developement...\n\033[0m"
+
+	fastbootd_function(){
+
+		echo -e "\033[1;32m[i]Do you want to patch your recovery to get Fastbootd..?\1.yes\n2.no\033[0m"	
+		read -p "Choose value (1,2) : " fastbootd_input
+		if [ "$fastbootd_input" == 1 ]; then
+			recovery_patch
+		else 
+			echo "Skipping Fastbootd patch.."
+		fi
+	}
+
 	if [ "$PARTITION_SCHEME" == 1 ]; then
 		cd "$WDIR/Downloads" #changed dir
 		cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 "$WDIR/output/"
 		cd "$WDIR/output" #changed dir
 		lz4 -m *.lz4
 		rm *.lz4 #cleaning
+		fastbootd_function
 		tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img; rm *.img #cleaning
 	else
 		cd "$WDIR/Downloads" #changed dir
@@ -106,6 +166,7 @@ base_files(){
 		cd "$WDIR/output" #changed dir
 		lz4 -m *.lz4
 		rm *.lz4 #cleaning
+		fastbootd_function
 		tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img dt.img; rm *.img #cleaning
 	fi
 	zip "${BASE_TAR_NAME}.zip" "$BASE_TAR_NAME"
@@ -216,6 +277,7 @@ no_super(){
 	sleep 5
 	cleanup
 }
+
 
 user_selection(){
 	echo -e "\n\033[1;34m - Main menu -\033[0m"
