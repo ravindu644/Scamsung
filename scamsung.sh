@@ -94,7 +94,7 @@ is_dynamic(){
 
 recovery_patch(){
 	echo -e "\n\033[1;31m[+] Patching the recovery to get Fastbootd back..!\n\033[0m"
-	chmod a+x $WDIR/bin/*
+	chmod a+x $WDIR/Scamsung/bin/*
 	cd "$WDIR" && cd recovery
 	cp "$WDIR/Downloads/recovery.img.lz4" .
 	if [ -f recovery.img.lz4 ];then
@@ -130,11 +130,12 @@ recovery_patch(){
 	$WDIR/Scamsung/bin/magiskboot  repack ../r.img new-boot.img
 	mv new-boot.img ../recovery-patched.img; cd ..
 
-        python3 "$WDIR/bin/avbtool" extract_public_key --key phh.pem --output phh.pub.bin
-        python3 "$WDIR/bin/avbtool" add_hash_footer --partition_name recovery --partition_size $(wc -c recovery.img |cut -f 1 -d ' ') --image recovery-patched.img --key phh.pem --algorithm SHA256_RSA4096
+        python3 "$WDIR/Scamsung/bin/avbtool" extract_public_key --key phh.pem --output phh.pub.bin
+        python3 "$WDIR/Scamsung/bin/avbtool" add_hash_footer --partition_name recovery --partition_size $(wc -c recovery.img |cut -f 1 -d ' ') --image recovery-patched.img --key phh.pem --algorithm SHA256_RSA4096
         mv recovery-patched.img "$WDIR/output/recovery.img"
         #tar cvf fastbootd-recovery.tar "$WDIR/output/recovery.img"
         echo -e "\033[1;32m\n[i] Patching Done..!"
+        cd "$WDIR/output" #changed dir
 
 }
 
@@ -143,7 +144,7 @@ base_files(){
 
 	fastbootd_function(){
 
-		echo -e "\033[1;32m[i]Do you want to patch your recovery to get Fastbootd..?\n1.yes\n2.no\n\033[0m"	
+		echo -e "\033[1;32m[i]Do you want to patch your recovery to get Fastbootd..?\n\t1.yes\n\t2.no\n\033[0m"	
 		read -p "Choose value (1,2) : " fastbootd_input
 		if [ "$fastbootd_input" == 1 ]; then
 			recovery_patch
