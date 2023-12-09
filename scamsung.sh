@@ -179,7 +179,7 @@ cleanup(){
 	clear
 	rm -rf Downloads Workplace output super
 	echo -e "\033[1;32m[i]Cleaned..!\n\033[0m"
-	sleep
+	sleep 2
 	clear
 	read -p "Wanna restart the Script ? (1,2) : " confirmation
 	if [ "$confirmation" == 1 ]; then
@@ -189,6 +189,20 @@ cleanup(){
 		echo "Good bye..!"
 		exit 1
 	fi
+}
+
+no_super(){
+	echo -e "\033[1;31m[+] Making a Compressed Firmware package without Super/system...\033[0m"
+	cd "$WDIR/Downloads"
+	rm $IMG
+	lz4 -d *.lz4
+	rm *.lz4 #cleaning
+	NON_SUPER="No ${IMG} + AP + CSC - ${DEVICE_NAME}.zip"
+	zip "$NON_SUPER" *.img
+	mv "$NON_SUPER" "$WDIR/output"
+	echo -e "\033[1;32m[i] Task completed and saved in ${WDIR}/output..!\n[i] Restarting the Script in 5 seconds..!"
+	sleep 5
+	cleanup
 }
 
 user_selection(){
