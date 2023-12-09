@@ -176,14 +176,11 @@ repacking(){
 
 cleanup(){
 	cd "$WDIR"
-	clear
 	rm -rf Downloads Workplace output super
-	echo -e "\033[1;32m[i]Cleaned..!\n\033[0m"
+	echo -e "\033[1;32m\n[i]Cleaned..!\n\033[0m"
 	sleep 2
-	clear
 	read -p "Wanna restart the Script ? (1,2) : " confirmation
-	if [ "$confirmation" == 1 ]; then
-		clear
+	if [ "$confirmation" == 1 ]; then	
 		restart
 	else
 		echo "Good bye..!"
@@ -215,7 +212,7 @@ no_super(){
 		fi
 	}
 	input_no_super
-	echo -e "\033[1;32m[i] Task completed and saved in ${WDIR}/output..!\n[i] Restarting the Script in 5 seconds..!"
+	echo -e "\033[1;32m\n[i] Task completed and saved in ${WDIR}/output..!\n[i] Restarting the Script in 5 seconds..!"
 	sleep 5
 	cleanup
 }
