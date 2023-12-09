@@ -174,10 +174,27 @@ repacking(){
 	echo -e "\033[1;32m[i]Firmware extraction for device ${DEVICE_NAME} is completed!"
 }
 
+cleanup(){
+	cd "$WDIR"
+	clear
+	rm -rf Downloads Workplace output super
+	echo -e "\033[1;32m[i]Cleaned..!\n\033[0m"
+	sleep
+	clear
+	read -p "Wanna restart the Script ? (1,2) : " confirmation
+	if [ "$confirmation" == 1 ]; then
+		clear
+		restart
+	else
+		echo "Good bye..!"
+		exit 1
+	fi
+}
+
 user_selection(){
 	echo -e "\n\033[1;34m - Main menu -\033[0m"
-	echo -e "\nWhat you want to do?\n\n1. Create a Base Zip file containing all the required files for Magisk\n2. Extracting the super.img or system.img\n3. Full firmware extraction.\n4.Exit"
-	read -p "Choose a value (1,2,3,4) : " USER_INPUT
+	echo -e "\nWhat you want to do?\n\n1. Create a Base Zip file containing all the required files for Magisk\n2. Extracting the super.img or system.img\n3. Full firmware extraction.\n4. Exit\n5. Cleanup."
+	read -p "Choose a value (1,2,3,4,5) : " USER_INPUT
 
 	if [ "$USER_INPUT" == 1 ]; then
 		base_files
@@ -194,10 +211,23 @@ user_selection(){
 	elif [ "$USER_INPUT" == 4 ]; then
 		echo "Good bye..!"
 		exit 1
+	elif [ "$USER_INPUT" == 5 ]; then
+		cleanup
 	else
 		echo -e "Wrong input..! Try Again"
 		user_selection
 	fi
+}
+
+restart(){
+	banner
+	dependencies
+	variables
+	directories
+	downloading
+	extracting
+	is_dynamic
+	user_selection
 }
 
 ### STARTING SCRIPT HERE ###
