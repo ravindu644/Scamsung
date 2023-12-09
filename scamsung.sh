@@ -176,7 +176,7 @@ repacking(){
 
 cleanup(){
 	cd "$WDIR"
-	rm -rf Downloads Workplace output super
+	rm -rf Downloads Workplace super
 	echo -e "\033[1;32m\n[i]Cleaned..!\n\033[0m"
 	sleep 2
 	read -p "Wanna restart the Script ? (1,2) : " confirmation
