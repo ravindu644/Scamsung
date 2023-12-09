@@ -134,7 +134,7 @@ recovery_patch(){
         python3 "$WDIR/Scamsung/bin/avbtool" add_hash_footer --partition_name recovery --partition_size $(wc -c recovery.img |cut -f 1 -d ' ') --image recovery-patched.img --key phh.pem --algorithm SHA256_RSA4096
         mv recovery-patched.img "$WDIR/output/recovery.img"
         #tar cvf fastbootd-recovery.tar "$WDIR/output/recovery.img"
-        echo -e "\033[1;32m\n[i] Patching Done..!"
+        echo -e "\033[1;32m\n[i] Patching Done..!\n"
         cd "$WDIR/output" #changed dir
 
 }
@@ -172,7 +172,7 @@ base_files(){
 	fi
 	zip "${BASE_TAR_NAME}.zip" "$BASE_TAR_NAME"
 	rm "$BASE_TAR_NAME"
-	echo -e "\033[1;32m[i] Zip file created: ${BASE_TAR_NAME}.zip\033[0m"
+	echo -e "\n\033[1;32m[i] Zip file created: ${BASE_TAR_NAME}.zip\033[0m"
 }
 
 ### EXTRACTING SYSTEM PARTITION ####
