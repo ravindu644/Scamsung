@@ -97,14 +97,14 @@ base_files(){
 		cd "$WDIR/Downloads" #changed dir
 		cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 "$WDIR/output/"
 		cd "$WDIR/output" #changed dir
-		lz4 -d *.lz4
+		lz4 -m *.lz4
 		rm *.lz4 #cleaning
 		tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img; rm *.img #cleaning
 	else
 		cd "$WDIR/Downloads" #changed dir
 		cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 dt.img.lz4 "$WDIR/output/"
 		cd "$WDIR/output" #changed dir
-		lz4 -d *.lz4
+		lz4 -m *.lz4
 		rm *.lz4 #cleaning
 		tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img dt.img; rm *.img #cleaning
 	fi
@@ -195,7 +195,7 @@ no_super(){
 	echo -e "\033[1;31m[+] Making a Compressed Firmware package without Super/system...\033[0m"
 	cd "$WDIR/Downloads"
 	rm $IMG
-	lz4 -d *.lz4
+	lz4 -m *.lz4
 	rm *.lz4 #cleaning
 	NON_SUPER="No ${IMG} + AP + CSC - ${DEVICE_NAME}"
 	echo -e "\nChoose a compression method : \n1.ZIP (Faster) \n2.XZ (Slower, also lower size)"
