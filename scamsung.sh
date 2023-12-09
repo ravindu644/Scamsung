@@ -48,7 +48,7 @@ downloading() {
     cd "$WDIR/Downloads" # Change directory
     get_link
     echo -e "\033[1;31m[+]Downloading firmware.zip...\n\033[0m"
-    if wget "$FIRMWARE_LINK" -O firmware.zip --progress=bar:force --tries=3; then
+    if curl -# -o firmware.zip "$FIRMWARE_LINK" --retry 3; then
         echo -e "\033[1;32m[i]Download Completed..!\033[0m"
     else
         echo -e "\033[1;31m[x]Error: Download failed. Enter a valid link :\033[0m"
