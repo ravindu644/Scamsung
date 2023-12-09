@@ -205,7 +205,7 @@ no_super(){
 		elif [ "$super_compression" == 2 ]; then
 			tar -cvf "${NON_SUPER}.tar" *.img
 			xz -9 --threads=0 "${NON_SUPER}.tar"
-			mv "${NON_SUPER}.tar" "$WDIR/output"
+			mv "${NON_SUPER}.tar.xz" "$WDIR/output"
 		else
 			echo "Wrong input..! Try Again..."
 			input_no_super
