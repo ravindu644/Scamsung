@@ -95,7 +95,7 @@ is_dynamic(){
 recovery_patch(){
 	echo -e "\033[1;31m[+] Patching the recovery to get Fastbootd back..!\n\033[0m"
 	chmod a+x $WDIR/bin/*
-	cd "$WDIR" && mkdir recovery && cd recovery
+	cd "$WDIR" && cd recovery
 	cp "$WDIR/Downloads/recovery.img.lz4" .
 	if [ -f recovery.img.lz4 ];then
 		lz4 -B6 --content-size -f recovery.img.lz4 recovery.img
