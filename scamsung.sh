@@ -197,9 +197,24 @@ no_super(){
 	rm $IMG
 	lz4 -d *.lz4
 	rm *.lz4 #cleaning
-	NON_SUPER="No ${IMG} + AP + CSC - ${DEVICE_NAME}.zip"
-	zip "$NON_SUPER" *.img
-	mv "$NON_SUPER" "$WDIR/output"
+	NON_SUPER="No ${IMG} + AP + CSC - ${DEVICE_NAME}"
+	echo -e "\nChoose a compression method : \n1.ZIP (Faster) \n2.XZ (Slower, also lower size)"
+	read -p "Enter value (1,2) : " super_compression
+	
+	input_no_super(){
+		if [ "$super_compression" == 1 ]; then
+			zip "${NON_SUPER}.zip" *.img
+			mv "${NON_SUPER}.zip" "$WDIR/output"
+		elif [ "$super_compression" == 2 ]; then
+			tar -cvf "${NON_SUPER}.tar" *.img
+			xz -9 --threads=0 "${NON_SUPER}.tar"
+			mv "${NON_SUPER}.tar" "$WDIR/output"
+		else
+			echo "Wrong input..! Try Again..."
+			input_no_super
+		fi
+	}
+	input_no_super
 	echo -e "\033[1;32m[i] Task completed and saved in ${WDIR}/output..!\n[i] Restarting the Script in 5 seconds..!"
 	sleep 5
 	cleanup
@@ -207,7 +222,7 @@ no_super(){
 
 user_selection(){
 	echo -e "\n\033[1;34m - Main menu -\033[0m"
-	echo -e "\nWhat you want to do?\n\n1. Create a Base Zip file containing all the required files for Magisk\n2. Extracting the super.img or system.img\n3. Full firmware extraction.\n4. Exit\n5. Cleanup."
+	echo -e "\nWhat you want to do?\n\n1. Create a Base Zip file containing all the required files for Magisk\n2. Extracting the super.img or system.img\n3. Full firmware extraction.\n4. Extract the firmware without ${IMG} (Includes files from CSC and AP)\n5. Exit\n6. Cleanup."
 	read -p "Choose a value (1,2,3,4,5) : " USER_INPUT
 
 	if [ "$USER_INPUT" == 1 ]; then
@@ -223,9 +238,12 @@ user_selection(){
 		repacking
 		user_selection
 	elif [ "$USER_INPUT" == 4 ]; then
+		base_files
+		no_super	
+	elif [ "$USER_INPUT" == 5 ]; then
 		echo "Good bye..!"
 		exit 1
-	elif [ "$USER_INPUT" == 5 ]; then
+	elif [ "$USER_INPUT" == 6 ]; then
 		cleanup
 	else
 		echo -e "Wrong input..! Try Again"
