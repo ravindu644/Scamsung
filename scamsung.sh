@@ -40,7 +40,7 @@ get_link(){
 directories(){
 	cd "$WDIR"
 	echo -e "\033[1;31m[+]Creating directories...\n\033[0m"
-	mkdir Downloads && mkdir Workplace && mkdir output
+	mkdir Downloads Workplace output super
 	echo -e "\033[1;32m[i]Done..!\033[0m"
 }
 
@@ -57,6 +57,7 @@ downloading() {
 }
 
 extracting(){
+	cd "$WDIR/Downloads" # Change directory
 	echo -e "\033[1;31m[+]Extracting the firmware Zip...\n\033[0m"
 	unzip firmware.zip && rm firmware.zip
 	tar -xf AP*.tar.md5 && tar -xf CSC*.tar.md5 && rm *.tar.md5 #extract and clean
@@ -70,7 +71,7 @@ is_dynamic(){
         	echo -e "\033[1;32m[i] Dynamic Partition Device Detected..!\033[0m"		
 		IMG="super.img.lz4"
                 CMD(){
-                	mv $IMG "$WDIR/Workplace"
+                	mv $IMG "$WDIR/super"
                 }
 
 	elif [ -e system.img.lz4 ]; then
@@ -78,10 +79,10 @@ is_dynamic(){
         	echo -e "\033[1;32m[i] Non-Dynamic Partition Device Detected..!\033[0m"	
         	IMG="system.img.lz4"
                 CMD(){
-                        mv $IMG "$WDIR/Workplace"
+                        mv $IMG "$WDIR/super"
                         lz4 vendor.img.lz4 && lz4 product.img.lz4
-                        mv vendor.img "$WDIR/Workplace"
-                        mv product.img "$WDIR/Workplace"
+                        mv vendor.img "$WDIR/super"
+                        mv product.img "$WDIR/super"
                 }
 
         else
@@ -115,11 +116,11 @@ base_files(){
 ### EXTRACTING SYSTEM PARTITION ####
 
 super_extract(){
-	echo -e "\033[1;31m[+]Moving files to Workplace directory...\n\033[0m"
+	echo -e "\033[1;31m[+]Moving files to super directory...\n\033[0m"
 	cd "$WDIR/Downloads"
 	CMD
-	cd "$WDIR/Workplace" #changed dir
-	echo -e "\033[1;32m[i]Cleaned up and you are now in the Workplace directory !\n\033[0m"
+	cd "$WDIR/super" #changed dir
+	echo -e "\033[1;32m[i]Cleaned up and you are now in the super directory !\n\033[0m"
 	echo -e "\033[1;31m[+]Decompressing ${IMG}...\n\033[0m"
 	lz4 "$IMG"
 	rm "$IMG"
