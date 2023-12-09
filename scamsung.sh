@@ -9,7 +9,7 @@
 ################################################################################
 WDIR=$(pwd)
 banner (){
-	echo -e "\n\033[1;34mSamsung Firmware Extractor 2.0 - By Ravindu Deshan\033[0m"
+	echo -e "\n\033[1;34mSamsung Firmware Extractor 3.0 - By Ravindu Deshan\033[0m"
 	echo -e "\t\033[1;31mInstalling requirements...\033[0m\n"
 }
 
