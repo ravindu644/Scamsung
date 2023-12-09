@@ -66,6 +66,7 @@ extracting(){
 is_dynamic(){
 	cd "$WDIR/Downloads" # Change directory
 	if [ -e super.img.lz4 ]; then
+		PARTITION_SCHEME=1
         	echo -e "\033[1;32m[i] Dynamic Partition Device Detected..!\033[0m"		
 		IMG="super.img.lz4"
                 CMD(){
@@ -73,6 +74,7 @@ is_dynamic(){
                 }
 
 	elif [ -e system.img.lz4 ]; then
+		PARTITION_SCHEME=2
         	echo -e "\033[1;32m[i] Non-Dynamic Partition Device Detected..!\033[0m"	
         	IMG="system.img.lz4"
                 CMD(){
@@ -94,21 +96,14 @@ base_files(){
 		cd "$WDIR/Downloads" #changed dir
 		cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 "$WDIR/output/"
 		cd "$WDIR/output" #changed dir
-		lz4 boot.img.lz4
-		lz4 vbmeta.img.lz4
-		lz4 recovery.img.lz4
-		lz4 dtbo.img.lz4
+		lz4 -d *.lz4
 		rm *.lz4 #cleaning
 		tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img; rm *.img #cleaning
 	else
 		cd "$WDIR/Downloads" #changed dir
 		cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 dt.img.lz4 "$WDIR/output/"
 		cd "$WDIR/output" #changed dir
-		lz4 boot.img.lz4
-		lz4 vbmeta.img.lz4
-		lz4 dt.img.lz4
-		lz4 recovery.img.lz4
-		lz4 dtbo.img.lz4
+		lz4 -d *.lz4
 		rm *.lz4 #cleaning
 		tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img dt.img; rm *.img #cleaning
 	fi
