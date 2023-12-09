@@ -14,13 +14,12 @@ banner (){
 }
 
 dependencies() {
-	#sudo apt update > /dev/null
-	#sudo apt install simg2img > /dev/null
+	sudo apt update > /dev/null
+	sudo apt install simg2img make lz4 > /dev/null
 	compiling_lz4(){
 		echo -e "\t\033[1;31mCompiling lz4...\033[0m\n"
 		git clone https://github.com/lz4/lz4.git > /dev/null 2>&1
 		cd lz4 && make > /dev/null && make install > /dev/null 2>&1
-		sudo apt install lz4 > /dev/null 2>&1 #fix issues with gitpod
 		cd "$WDIR"
 	}
 	compiling_lz4
@@ -30,31 +29,12 @@ dependencies() {
 variables(){
 	echo -e "\033[1;37m[+] Enter your Device Name : \033[0m\n"
 	read DEVICE_NAME 
-	echo -e "\033[1;37m[i] Enter your firmware link [from samfw.com]: \n\033[0m"
-	read FIRMWARE_LINK
 	BASE_TAR_NAME="Base files - $DEVICE_NAME.tar"
 }
 
-is_dynamic(){
-        echo -e "Which partition scheme your device have ?(1,2)\n\n 1. Dynamic partitions (super.img)\n 2. None-dynamic partitions (system.img)\n"
-        read -p "Choose value (1,2) : " PARTITION_SCHEME
-        if [ "$PARTITION_SCHEME" == 1 ]; then
-                IMG="super.img.lz4"
-                CMD(){
-                        mv $IMG "$WDIR/Workplace"
-                }
-        elif [ "$PARTITION_SCHEME" == 2 ]; then
-        		IMG="system.img.lz4"
-                CMD(){
-                        mv $IMG "$WDIR/Workplace"
-                        lz4 vendor.img.lz4 && lz4 product.img.lz4
-                        mv vendor.img "$WDIR/Workplace"
-                        mv product.img "$WDIR/Workplace"
-                }
-        else
-                echo "Invalid Input ! Try again..."
-                is_dynamic
-        fi
+get_link(){
+	echo -e "\033[1;37m[i] Enter your firmware link [from samfw.com]: \n\033[0m"
+	read FIRMWARE_LINK
 }
 
 directories(){
@@ -66,15 +46,13 @@ directories(){
 
 downloading() {
     cd "$WDIR/Downloads" # Change directory
+    get_link
     echo -e "\033[1;31m[+]Downloading firmware.zip...\n\033[0m"
-    
-    # Use wget with --tries to limit the number of retries
     if wget "$FIRMWARE_LINK" -O firmware.zip --progress=bar:force --tries=3; then
         echo -e "\033[1;32m[i]Download Completed..!\033[0m"
     else
-        # Print an error message and exit the script
         echo -e "\033[1;31m[x]Error: Download failed. Enter a valid link :\033[0m"
-        downloading
+        get_link
     fi
 }
 
@@ -83,6 +61,31 @@ extracting(){
 	unzip firmware.zip && rm firmware.zip
 	tar -xf AP*.tar.md5 && tar -xf CSC*.tar.md5 && rm *.tar.md5 #extract and clean
 	echo -e "\n\033[1;32m[i]Zip Extraction Completed..!\033[0m"
+}
+
+is_dynamic(){
+	cd "$WDIR/Downloads" # Change directory
+	if [ -e super.img.lz4 ]; then
+        	echo -e "\033[1;32m[i] Dynamic Partition Device Detected..!\033[0m"		
+		IMG="super.img.lz4"
+                CMD(){
+                	mv $IMG "$WDIR/Workplace"
+                }
+
+	elif [ -e system.img.lz4 ]; then
+        	echo -e "\033[1;32m[i] Non-Dynamic Partition Device Detected..!\033[0m"	
+        	IMG="system.img.lz4"
+                CMD(){
+                        mv $IMG "$WDIR/Workplace"
+                        lz4 vendor.img.lz4 && lz4 product.img.lz4
+                        mv vendor.img "$WDIR/Workplace"
+                        mv product.img "$WDIR/Workplace"
+                }
+
+        else
+                echo "An Internal Error occured..!"
+                exit 1
+        fi
 }
 
 base_files(){
@@ -206,10 +209,10 @@ user_selection(){
 banner
 dependencies
 variables
-is_dynamic
 directories
 downloading
 extracting
+is_dynamic
 user_selection
 
 # Copyright (c) [2023] [Ravindu Deshan]
