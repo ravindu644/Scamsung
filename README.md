@@ -17,7 +17,7 @@
 #### ✅ 02. Patching the stock recovery image to get fastbootd back..!
 - Based on - [Patch-Recovery](https://github.com/Johx22/Patch-Recovery)
 #### ✅ 03. Downloading the images inside of the AP and CSC without super/system images.
-#### ✅ 04. Unpacking the system, vendor, product and odm images from super.img and Compressing the firmware package using extreame xz compression.
+#### ✅ 04. Unpacking the system, vendor, product and odm images from super.img and Compressing the firmware package using extreme xz compression.
 
 ## More features are coming soon.. <hr>
 ## How to run..? 🏃‍♂️
