@@ -1,11 +1,11 @@
 # - Samsung Firmware Extractor 3.0 - (aka Scamsung)
-## A simple way to root your Samsung device without wasting data and time ❤️ . <br>
+## A simple way to root your Samsung device without wasting data and time..❤️ <br>
 
 <img src="https://github.com/ravindu644/Scamsung/assets/126038496/17cf89f4-5304-4991-b711-448be2be34e2" width=75% align="center"> 
 
 ## <i> - Features ⚡️ - </i>
 
-#### ✅ 01. Downloading the only required files from your stock firmware to root your device and saving them in your Google Drive.
+#### ✅ 01. Downloading the required files only from your stock firmware to root your device and saving them in your Google Drive.
 - So, no need to download the whole firmware package, to get a files around 100MB.
 #### ✅ 02. Patching the stock recovery image to get fastbootd back..!
 - Based on - [Patch-Recovery](https://github.com/Johx22/Patch-Recovery)
