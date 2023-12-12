@@ -61,7 +61,11 @@ extracting(){
 	echo -e "\033[1;31m[+]Extracting the firmware Zip...\n\033[0m"
 	unzip firmware.zip && rm firmware.zip
 	tar -xf *.tar.md5 && rm *.tar.md5 #extract and clean
-	cp recovery.img.lz4 "$WDIR/recovery"
+	if [ -e "$WDIR/Downloads/recovery.img.lz4" ]; then
+		cp "$WDIR/Downloads/recovery.img.lz4" .
+	else
+		cp "$WDIR/Downloads/recovery.img" .
+	fi
 	echo -e "\n\033[1;32m[i]Zip Extraction Completed..!\033[0m"
 }
 
@@ -184,13 +188,11 @@ base_files(){
 		cd "$WDIR/output" #changed dir
 		lz4 -m *.lz4
 		rm *.lz4 #cleaning
-		fastbootd_function
 		tar cvf "$BASE_TAR_NAME" boot.img recovery.img ; rm *.img #cleaning
 	elif [ "$is_legacy" == 1 ] && [ -e system.img ]; then
 		cd "$WDIR/Downloads" #changed dir
 		cp boot.img recovery.img "$WDIR/output/"
 		cd "$WDIR/output" #changed dir
-		fastbootd_function
 		tar cvf "$BASE_TAR_NAME" boot.img recovery.img ; rm *.img #cleaning
 
 	elif [ "$PARTITION_SCHEME" == 1 ]; then
