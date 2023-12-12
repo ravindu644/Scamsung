@@ -84,18 +84,20 @@ is_dynamic(){
         	echo -e "\033[1;32m[i] Non-Dynamic Partition Device Detected..!\033[0m"	
         	IMG="system.img.lz4"
                 CMD(){
-                	if [ -e "vendor.img.lz4" ]	; then
                         mv $IMG "$WDIR/super"
                         lz4 vendor.img.lz4 && lz4 product.img.lz4
                         mv vendor.img "$WDIR/super"
                         mv product.img "$WDIR/super"
-                    else
-                    	echo "Currently only supports Base files extracting for Legacy Devices..! "
-                    fi
                 }
 
-    elif [ -e system.img ]; then
+    elif [ -e system.img ] && [ ! -e vendor.img ] ; then
     	is_legacy=1
+        CMD(){
+        	echo "Currently only supports Base files extracting for Legacy Devices..! "
+        	user_selection
+        }    	
+
+
 
     else
         echo "An Internal Error occured..!"
@@ -241,7 +243,7 @@ super_extract(){
 		chmod +x "$WDIR/Scamsung/bin/lpunpack"
 		"$WDIR/Scamsung/bin/lpunpack" super.img.raw && rm super.img.raw
 		echo -e "\n\033[1;32m[i]Extraction completed!\033[0m"
-	else
+	elif [ "$PARTITION_SCHEME" == 2 ]; then
 		echo -e "\033[1;32m[i]Your System partition size is : $(stat -c '%n %s' system.img) bytes\n\033[0m"
 
 	fi
@@ -252,7 +254,7 @@ repacking(){
 	TAR_NAME="System - $DEVICE_NAME.tar"
 	if [ "$PARTITION_SCHEME" == 1 ]; then
 		tar cf "$TAR_NAME" system.img vendor.img odm.img product.img
-	else
+	elif [ "$PARTITION_SCHEME" == 2 ]; then
 		tar cf "$TAR_NAME" system.img vendor.img product.img
 	fi
 	echo -e "\nChoose a compression method\n1.ZIP\n2.TAR.XZ (Slower)"
