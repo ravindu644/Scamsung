@@ -60,7 +60,7 @@ extracting(){
 	cd "$WDIR/Downloads" # Change directory
 	echo -e "\033[1;31m[+]Extracting the firmware Zip...\n\033[0m"
 	unzip firmware.zip && rm firmware.zip
-	tar -xf AP*.tar.md5 && tar -xf CSC*.tar.md5 && rm *.tar.md5 #extract and clean
+	tar -xf *.tar.md5 && rm *.tar.md5 #extract and clean
 	cp recovery.img.lz4 "$WDIR/recovery"
 	echo -e "\n\033[1;32m[i]Zip Extraction Completed..!\033[0m"
 }
