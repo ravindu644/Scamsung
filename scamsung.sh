@@ -62,7 +62,7 @@ extracting(){
 	unzip firmware.zip && rm firmware.zip
 
 	for file in *.tar.md5; do
-    tar -xvf "$file" && rm "$file"
+    	   tar -xvf "$file" && rm "$file"
 	done
 	
 	if [ -e "$WDIR/Downloads/recovery.img.lz4" ]; then
