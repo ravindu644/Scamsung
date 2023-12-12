@@ -205,11 +205,10 @@ base_files(){
 			rm *.lz4 #cleaning
 			fastbootd_function
 			tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img dt.img; rm *.img #cleaning
-		fi
-		zip "${BASE_TAR_NAME}.zip" "$BASE_TAR_NAME"
-		rm "$BASE_TAR_NAME"
-		echo -e "\n\033[1;32m[i] Zip file created: ${BASE_TAR_NAME}.zip\033[0m"
 	fi
+	zip "${BASE_TAR_NAME}.zip" "$BASE_TAR_NAME"
+	rm "$BASE_TAR_NAME"
+	echo -e "\n\033[1;32m[i] Zip file created: ${BASE_TAR_NAME}.zip\033[0m"
 }
 
 ### EXTRACTING SYSTEM PARTITION ####
