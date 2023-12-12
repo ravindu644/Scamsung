@@ -39,8 +39,9 @@ get_link(){
 
 directories(){
 	cd "$WDIR"
+	rm -rf Downloads Workplace output super recovery 
 	echo -e "\033[1;31m[+]Creating directories...\n\033[0m"
-	mkdir Downloads Workplace output super recovery
+	mkdir Downloads Workplace output super recovery > /dev/null 2>&1
 	echo -e "\033[1;32m[i]Done..!\033[0m"
 }
 
@@ -62,9 +63,9 @@ extracting(){
 	unzip firmware.zip && rm firmware.zip
 
 	for file in *.tar.md5; do
-    	   tar -xvf "$file" && rm "$file"
+    	tar -xvf "$file" && rm "$file"
 	done
-	
+
 	if [ -e "$WDIR/Downloads/recovery.img.lz4" ]; then
 		cp "$WDIR/Downloads/recovery.img.lz4" "$WDIR/recovery"
 	else
