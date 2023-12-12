@@ -39,8 +39,9 @@ get_link(){
 
 directories(){
 	cd "$WDIR"
+	rm -rf Downloads Workplace output super recovery 
 	echo -e "\033[1;31m[+]Creating directories...\n\033[0m"
-	mkdir Downloads Workplace output super recovery
+	mkdir Downloads Workplace output super recovery > /dev/null 2>&1
 	echo -e "\033[1;32m[i]Done..!\033[0m"
 }
 
@@ -60,8 +61,16 @@ extracting(){
 	cd "$WDIR/Downloads" # Change directory
 	echo -e "\033[1;31m[+]Extracting the firmware Zip...\n\033[0m"
 	unzip firmware.zip && rm firmware.zip
-	tar -xf AP*.tar.md5 && tar -xf CSC*.tar.md5 && rm *.tar.md5 #extract and clean
-	cp recovery.img.lz4 "$WDIR/recovery"
+
+	for file in *.tar.md5; do
+    	tar -xvf "$file" && rm "$file"
+	done
+
+	if [ -e "$WDIR/Downloads/recovery.img.lz4" ]; then
+		cp "$WDIR/Downloads/recovery.img.lz4" "$WDIR/recovery"
+	else
+		cp "$WDIR/Downloads/recovery.img" "$WDIR/recovery"
+	fi
 	echo -e "\n\033[1;32m[i]Zip Extraction Completed..!\033[0m"
 }
 
@@ -86,17 +95,43 @@ is_dynamic(){
                         mv product.img "$WDIR/super"
                 }
 
-        else
-                echo "An Internal Error occured..!"
-                exit 1
-        fi
+    elif [ -e system.img ] && [ ! -e vendor.img ] ; then
+    	is_legacy=1
+        CMD(){
+        	echo -e "\n\033[1;32mCurrently only supports Base files extracting for Legacy Devices..!\033[0m\n"
+        	sleep 2
+        	echo -e "\033[1;32m[i] Restarting..!\033[0m"
+        	sleep 2
+        	user_selection
+        }    	
+
+
+
+    else
+        echo "An Internal Error occured..!"
+        exit 1
+    fi
+}
+
+LCMD(){
+	if [ "$is_legacy" == 1 ]; then
+	    echo -e "\n\033[1;32mCurrently only supports Base files extracting for Legacy Devices..!\033[0m\n"
+    	sleep 2
+    	echo -e "\033[1;32m[i] Restarting..!\033[0m"
+    	sleep 2
+    	user_selection
+    fi
 }
 
 recovery_patch(){
 	echo -e "\n\033[1;31m[+] Patching the recovery to get Fastbootd back..!\n\033[0m"
 	chmod a+x $WDIR/Scamsung/bin/*
 	cd "$WDIR" && cd recovery
-	cp "$WDIR/Downloads/recovery.img.lz4" .
+	if [ -e "$WDIR/Downloads/recovery.img.lz4" ]; then
+		cp "$WDIR/Downloads/recovery.img.lz4" .
+	else
+		cp "$WDIR/Downloads/recovery.img" .
+	fi
 	if [ -f recovery.img.lz4 ];then
 		lz4 -B6 --content-size -f recovery.img.lz4 recovery.img
 	fi
@@ -153,22 +188,49 @@ base_files(){
 		fi
 	}
 
-	if [ "$PARTITION_SCHEME" == 1 ]; then
+	legacy_check(){
+
 		cd "$WDIR/Downloads" #changed dir
-		cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 "$WDIR/output/"
+		if [ ! -e "vbmeta.img.lz4" ]; then
+			if [ ! -e "dtbo.img.lz4" ]; then
+				is_legacy=1
+			fi
+		else
+			is_legacy=0
+		fi
+
+	}
+	legacy_check
+
+	if [ "$is_legacy" == 1 ] && [ -e system.img.lz4 ]; then		
+		cd "$WDIR/Downloads" #changed dir
+		cp boot.img.lz4 recovery.img.lz4 "$WDIR/output/"
 		cd "$WDIR/output" #changed dir
 		lz4 -m *.lz4
 		rm *.lz4 #cleaning
-		fastbootd_function
-		tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img; rm *.img #cleaning
-	else
+		tar cvf "$BASE_TAR_NAME" boot.img recovery.img ; rm *.img #cleaning
+	elif [ "$is_legacy" == 1 ] && [ -e system.img ]; then
 		cd "$WDIR/Downloads" #changed dir
-		cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 dt.img.lz4 "$WDIR/output/"
+		cp boot.img recovery.img "$WDIR/output/"
 		cd "$WDIR/output" #changed dir
-		lz4 -m *.lz4
-		rm *.lz4 #cleaning
-		fastbootd_function
-		tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img dt.img; rm *.img #cleaning
+		tar cvf "$BASE_TAR_NAME" boot.img recovery.img ; rm *.img #cleaning
+
+	elif [ "$PARTITION_SCHEME" == 1 ]; then
+			cd "$WDIR/Downloads" #changed dir
+			cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 "$WDIR/output/"
+			cd "$WDIR/output" #changed dir
+			lz4 -m *.lz4
+			rm *.lz4 #cleaning
+			fastbootd_function
+			tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img; rm *.img #cleaning
+		else
+			cd "$WDIR/Downloads" #changed dir
+			cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 dt.img.lz4 "$WDIR/output/"
+			cd "$WDIR/output" #changed dir
+			lz4 -m *.lz4
+			rm *.lz4 #cleaning
+			fastbootd_function
+			tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img dt.img; rm *.img #cleaning
 	fi
 	zip "${BASE_TAR_NAME}.zip" "$BASE_TAR_NAME"
 	rm "$BASE_TAR_NAME"
@@ -178,62 +240,70 @@ base_files(){
 ### EXTRACTING SYSTEM PARTITION ####
 
 super_extract(){
-	echo -e "\033[1;31m[+]Moving files to super directory...\n\033[0m"
-	cd "$WDIR/Downloads"
-	CMD
-	cd "$WDIR/super" #changed dir
-	echo -e "\033[1;32m[i]Cleaned up and you are now in the super directory !\n\033[0m"
-	echo -e "\033[1;31m[+]Decompressing ${IMG}...\n\033[0m"
-	lz4 "$IMG"
-	rm "$IMG"
-	echo -e "\n\033[1;32m[i]Decompression completed!\n\033[0m"
+	if [ ! "$is_legacy" == 1 ]; then	
+		echo -e "\033[1;31m[+]Moving files to super directory...\n\033[0m"
+		cd "$WDIR/Downloads"
+		CMD
+		cd "$WDIR/super" #changed dir
+		echo -e "\033[1;32m[i]Cleaned up and you are now in the super directory !\n\033[0m"
+		echo -e "\033[1;31m[+]Decompressing ${IMG}...\n\033[0m"
+		lz4 "$IMG"
+		rm "$IMG"
+		echo -e "\n\033[1;32m[i]Decompression completed!\n\033[0m"
 
-	if [ "$PARTITION_SCHEME" == 1 ]; then
-		echo -e "\033[1;31m[+]Converting the super image to a RAW image...\n\033[0m"
-		chmod +x "$WDIR/Scamsung/bin/simg2img"
-		"$WDIR/Scamsung/bin/simg2img" super.img super.img.raw
-		rm super.img
-		echo -e "\033[1;32m[i]Conversion completed!\n\033[0m"
-		echo -e "\033[1;32m[i]Your super partition size is : $(stat -c '%n %s' super.img.raw) bytes\n\033[0m"
-		echo -e "\033[1;31m[+]Extracting system, vendor, product, odm partitions from super.img.raw...\n\033[0m"
-		chmod +x "$WDIR/Scamsung/bin/lpunpack"
-		"$WDIR/Scamsung/bin/lpunpack" super.img.raw && rm super.img.raw
-		echo -e "\n\033[1;32m[i]Extraction completed!\033[0m"
+		if [ "$PARTITION_SCHEME" == 1 ]; then
+			echo -e "\033[1;31m[+]Converting the super image to a RAW image...\n\033[0m"
+			chmod +x "$WDIR/Scamsung/bin/simg2img"
+			"$WDIR/Scamsung/bin/simg2img" super.img super.img.raw
+			rm super.img
+			echo -e "\033[1;32m[i]Conversion completed!\n\033[0m"
+			echo -e "\033[1;32m[i]Your super partition size is : $(stat -c '%n %s' super.img.raw) bytes\n\033[0m"
+			echo -e "\033[1;31m[+]Extracting system, vendor, product, odm partitions from super.img.raw...\n\033[0m"
+			chmod +x "$WDIR/Scamsung/bin/lpunpack"
+			"$WDIR/Scamsung/bin/lpunpack" super.img.raw && rm super.img.raw
+			echo -e "\n\033[1;32m[i]Extraction completed!\033[0m"
+		elif [ "$PARTITION_SCHEME" == 2 ]; then
+			echo -e "\033[1;32m[i]Your System partition size is : $(stat -c '%n %s' system.img) bytes\n\033[0m"
+
+		fi
 	else
-		echo -e "\033[1;32m[i]Your System partition size is : $(stat -c '%n %s' system.img) bytes\n\033[0m"
-
+		LCMD
 	fi
 }
 
 repacking(){
-	echo -e "\033[1;31m[+]Creating System TAR file...\n\033[0m"
-	TAR_NAME="System - $DEVICE_NAME.tar"
-	if [ "$PARTITION_SCHEME" == 1 ]; then
-		tar cf "$TAR_NAME" system.img vendor.img odm.img product.img
-	else
-		tar cf "$TAR_NAME" system.img vendor.img product.img
-	fi
-	echo -e "\nChoose a compression method\n1.ZIP\n2.TAR.XZ (Slower)"
-	read -p "Enter value (1,2) : " compression_method
-	
-	compression_method_input(){
-		if [ "$compression_method" == 2 ]; then
-			echo -e "\n[i] Compressing objects using XZ compression.."
-			xz -9 --threads=0 "$TAR_NAME"
-			echo -e "\033[1;32m[i]TAR file created: ${TAR_NAME}.xz\n\033[0m"
-			echo -e "\033[1;31m[+]Moving TAR file to Output...\n\033[0m" && mv "${TAR_NAME}.xz" "$WDIR/output"
-		elif [ "$compression_method" == 1 ]; then
-			echo -e "\n[i] Compressing objects using ZIP compression.."
-			zip -r "${TAR_NAME}.zip" "$TAR_NAME"
-			echo -e "\033[1;32m[i]ZIP file created: ${TAR_NAME}.zip\n\033[0m"
-			echo -e "\033[1;31m[+]Moving TAR file to Output...\n\033[0m" && mv "${TAR_NAME}.zip" "$WDIR/output"
-		else
-			echo -e "Invalid Input. Try Again..!"
-			compression_method_input
+	if [ ! "$is_legacy" == 1 ]; then
+		echo -e "\033[1;31m[+]Creating System TAR file...\n\033[0m"
+		TAR_NAME="System - $DEVICE_NAME.tar"
+		if [ "$PARTITION_SCHEME" == 1 ]; then
+			tar cf "$TAR_NAME" system.img vendor.img odm.img product.img
+		elif [ "$PARTITION_SCHEME" == 2 ]; then
+			tar cf "$TAR_NAME" system.img vendor.img product.img
 		fi
-	}
-	compression_method_input
-	echo -e "\033[1;32m[i]Firmware extraction for device ${DEVICE_NAME} is completed!"
+		echo -e "\nChoose a compression method\n1.ZIP\n2.TAR.XZ (Slower)"
+		read -p "Enter value (1,2) : " compression_method
+		
+		compression_method_input(){
+			if [ "$compression_method" == 2 ]; then
+				echo -e "\n[i] Compressing objects using XZ compression.."
+				xz -9 --threads=0 "$TAR_NAME"
+				echo -e "\033[1;32m[i]TAR file created: ${TAR_NAME}.xz\n\033[0m"
+				echo -e "\033[1;31m[+]Moving TAR file to Output...\n\033[0m" && mv "${TAR_NAME}.xz" "$WDIR/output"
+			elif [ "$compression_method" == 1 ]; then
+				echo -e "\n[i] Compressing objects using ZIP compression.."
+				zip -r "${TAR_NAME}.zip" "$TAR_NAME"
+				echo -e "\033[1;32m[i]ZIP file created: ${TAR_NAME}.zip\n\033[0m"
+				echo -e "\033[1;31m[+]Moving TAR file to Output...\n\033[0m" && mv "${TAR_NAME}.zip" "$WDIR/output"
+			else
+				echo -e "Invalid Input. Try Again..!"
+				compression_method_input
+			fi
+		}
+		compression_method_input
+		echo -e "\033[1;32m[i]Firmware extraction for device ${DEVICE_NAME} is completed!"
+	else
+		LCMD
+	fi
 }
 
 cleanup(){
@@ -251,32 +321,36 @@ cleanup(){
 }
 
 no_super(){
-	echo -e "\033[1;31m[+] Making a Compressed Firmware package without Super/system...\033[0m"
-	cd "$WDIR/Downloads"
-	rm $IMG
-	lz4 -m *.lz4
-	rm *.lz4 #cleaning
-	NON_SUPER="No ${IMG} + AP + CSC - ${DEVICE_NAME}"
-	echo -e "\nChoose a compression method : \n1.ZIP (Faster) \n2.XZ (Slower, also lower size)"
-	read -p "Enter value (1,2) : " super_compression
-	
-	input_no_super(){
-		if [ "$super_compression" == 1 ]; then
-			zip "${NON_SUPER}.zip" *.img
-			mv "${NON_SUPER}.zip" "$WDIR/output"
-		elif [ "$super_compression" == 2 ]; then
-			tar -cvf "${NON_SUPER}.tar" *.img
-			xz -9 --threads=0 "${NON_SUPER}.tar"
-			mv "${NON_SUPER}.tar.xz" "$WDIR/output"
-		else
-			echo "Wrong input..! Try Again..."
-			input_no_super
-		fi
-	}
-	input_no_super
-	echo -e "\033[1;32m\n[i] Task completed and saved in ${WDIR}/output..!\n[i] Restarting the Script in 5 seconds..!"
-	sleep 5
-	cleanup
+	if [ ! "$is_legacy" == 1 ]; then
+		echo -e "\033[1;31m[+] Making a Compressed Firmware package without Super/system...\033[0m"
+		cd "$WDIR/Downloads"
+		rm $IMG
+		lz4 -m *.lz4
+		rm *.lz4 #cleaning
+		NON_SUPER="No ${IMG} + AP + CSC - ${DEVICE_NAME}"
+		echo -e "\nChoose a compression method : \n1.ZIP (Faster) \n2.XZ (Slower, also lower size)"
+		read -p "Enter value (1,2) : " super_compression
+		
+		input_no_super(){
+			if [ "$super_compression" == 1 ]; then
+				zip "${NON_SUPER}.zip" *.img
+				mv "${NON_SUPER}.zip" "$WDIR/output"
+			elif [ "$super_compression" == 2 ]; then
+				tar -cvf "${NON_SUPER}.tar" *.img
+				xz -9 --threads=0 "${NON_SUPER}.tar"
+				mv "${NON_SUPER}.tar.xz" "$WDIR/output"
+			else
+				echo "Wrong input..! Try Again..."
+				input_no_super
+			fi
+		}
+		input_no_super
+		echo -e "\033[1;32m\n[i] Task completed and saved in ${WDIR}/output..!\n[i] Restarting the Script in 5 seconds..!"
+		sleep 5
+		cleanup
+	else
+		LCMD
+	fi
 }
 
 
