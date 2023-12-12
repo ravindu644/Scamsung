@@ -93,7 +93,7 @@ is_dynamic(){
     elif [ -e system.img ] && [ ! -e vendor.img ] ; then
     	is_legacy=1
         CMD(){
-        	echo -e "\033[1;32mCurrently only supports Base files extracting for Legacy Devices..!\033[0m"
+        	echo -e "\n\033[1;32mCurrently only supports Base files extracting for Legacy Devices..!\033[0m\n"
         	sleep 2
         	echo -e "\033[1;32m[i] Restarting..!\033[0m"
         	sleep 2
@@ -110,7 +110,7 @@ is_dynamic(){
 
 LCMD(){
 	if [ "$is_legacy" == 1 ]; then
-	    echo -e "\033[1;32mCurrently only supports Base files extracting for Legacy Devices..!\033[0m"
+	    echo -e "\n\033[1;32mCurrently only supports Base files extracting for Legacy Devices..!\033[0m\n"
     	sleep 2
     	echo -e "\033[1;32m[i] Restarting..!\033[0m"
     	sleep 2
