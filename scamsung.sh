@@ -234,14 +234,14 @@ base_files(){
 				fi
 			}
 			dt_check
-			if [ $is_dt == 1 ] && [ $is_dtbo == 1 ]; then 
+			if [ "$is_dt" == 1 ] && [ $is_dtbo == 1 ]; then 
 				cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 dt.img.lz4 "$WDIR/output/"
 				cd "$WDIR/output" #changed dir
 				lz4 -m *.lz4
 				rm *.lz4 #cleaning
 				fastbootd_function
 				tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img dt.img; rm *.img #cleaning
-			elif [ ! $is_dt == 1 ] && [ $is_dtbo == 1 ]; then
+			elif [ ! "$is_dt" == 1 ] && [ $is_dtbo == 1 ]; then
 				cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 "$WDIR/output/"
 				cd "$WDIR/output" #changed dir
 				lz4 -m *.lz4
