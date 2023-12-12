@@ -225,12 +225,38 @@ base_files(){
 			tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img; rm *.img #cleaning
 		else
 			cd "$WDIR/Downloads" #changed dir
-			cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 dt.img.lz4 "$WDIR/output/"
-			cd "$WDIR/output" #changed dir
-			lz4 -m *.lz4
-			rm *.lz4 #cleaning
-			fastbootd_function
-			tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img dt.img; rm *.img #cleaning
+			dt_check(){
+				if [ -e dt.img.lz4 ]; then
+					is_dt=1
+				fi
+				if [ -e dtbo.img.lz4 ]; then
+					is_dtbo=1
+				fi
+			}
+			dt_check
+			if [ $is_dt == 1 ] && [ $is_dtbo == 1 ]; then 
+				cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 dt.img.lz4 "$WDIR/output/"
+				cd "$WDIR/output" #changed dir
+				lz4 -m *.lz4
+				rm *.lz4 #cleaning
+				fastbootd_function
+				tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img dt.img; rm *.img #cleaning
+			elif [ ! $is_dt == 1 ] && [ $is_dtbo == 1 ]; then
+				cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 "$WDIR/output/"
+				cd "$WDIR/output" #changed dir
+				lz4 -m *.lz4
+				rm *.lz4 #cleaning
+				fastbootd_function
+				tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img ; rm *.img #cleaning
+			else
+			 	cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 "$WDIR/output/"
+				cd "$WDIR/output" #changed dir
+				lz4 -m *.lz4
+				rm *.lz4 #cleaning
+				fastbootd_function
+				tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img ; rm *.img #cleaning
+			fi
+
 	fi
 	zip "${BASE_TAR_NAME}.zip" "$BASE_TAR_NAME"
 	rm "$BASE_TAR_NAME"
