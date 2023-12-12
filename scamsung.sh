@@ -62,9 +62,9 @@ extracting(){
 	unzip firmware.zip && rm firmware.zip
 	tar -xf *.tar.md5 && rm *.tar.md5 #extract and clean
 	if [ -e "$WDIR/Downloads/recovery.img.lz4" ]; then
-		cp "$WDIR/Downloads/recovery.img.lz4" .
+		cp "$WDIR/Downloads/recovery.img.lz4" "$WDIR/recovery"
 	else
-		cp "$WDIR/Downloads/recovery.img" .
+		cp "$WDIR/Downloads/recovery.img" "$WDIR/recovery"
 	fi
 	echo -e "\n\033[1;32m[i]Zip Extraction Completed..!\033[0m"
 }
