@@ -60,7 +60,11 @@ extracting(){
 	cd "$WDIR/Downloads" # Change directory
 	echo -e "\033[1;31m[+]Extracting the firmware Zip...\n\033[0m"
 	unzip firmware.zip && rm firmware.zip
-	tar -xf *.tar.md5 && rm *.tar.md5 #extract and clean
+
+	for file in *.tar.md5; do
+    tar -xvf "$file" && rm "$file"
+	done
+	
 	if [ -e "$WDIR/Downloads/recovery.img.lz4" ]; then
 		cp "$WDIR/Downloads/recovery.img.lz4" "$WDIR/recovery"
 	else
