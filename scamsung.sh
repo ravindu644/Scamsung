@@ -103,7 +103,11 @@ recovery_patch(){
 	echo -e "\n\033[1;31m[+] Patching the recovery to get Fastbootd back..!\n\033[0m"
 	chmod a+x $WDIR/Scamsung/bin/*
 	cd "$WDIR" && cd recovery
-	cp "$WDIR/Downloads/recovery.img.lz4" .
+	if [ -e "$WDIR/Downloads/recovery.img.lz4" ]; then
+		cp "$WDIR/Downloads/recovery.img.lz4" .
+	else
+		cp "$WDIR/Downloads/recovery.img" .
+	fi
 	if [ -f recovery.img.lz4 ];then
 		lz4 -B6 --content-size -f recovery.img.lz4 recovery.img
 	fi
