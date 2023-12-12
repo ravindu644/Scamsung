@@ -80,10 +80,14 @@ is_dynamic(){
         	echo -e "\033[1;32m[i] Non-Dynamic Partition Device Detected..!\033[0m"	
         	IMG="system.img.lz4"
                 CMD(){
+                	if [ -e "vendor.img.lz4" ]	; then
                         mv $IMG "$WDIR/super"
                         lz4 vendor.img.lz4 && lz4 product.img.lz4
                         mv vendor.img "$WDIR/super"
                         mv product.img "$WDIR/super"
+                    else
+                    	echo "Currently only supports Base files extracting for Legacy Devices..! "
+                    fi
                 }
 
         else
@@ -153,26 +157,51 @@ base_files(){
 		fi
 	}
 
-	if [ "$PARTITION_SCHEME" == 1 ]; then
+	legacy_check(){
+
 		cd "$WDIR/Downloads" #changed dir
-		cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 "$WDIR/output/"
+		if [ ! -e "vbmeta.img" ]; then
+			if [ ! -e "dtbo.img" ]; then
+				is_legacy=1
+			fi
+		else
+			is_legacy=0
+		fi
+
+	}
+
+	legacy_check
+
+	if [ "$is_legacy" == 1 ]; then		
+		cd "$WDIR/Downloads" #changed dir
+		cp boot.img.lz4 recovery.img.lz4 "$WDIR/output/"
 		cd "$WDIR/output" #changed dir
 		lz4 -m *.lz4
 		rm *.lz4 #cleaning
 		fastbootd_function
-		tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img; rm *.img #cleaning
+		tar cvf "$BASE_TAR_NAME" boot.img recovery.img ; rm *.img #cleaning
 	else
-		cd "$WDIR/Downloads" #changed dir
-		cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 dt.img.lz4 "$WDIR/output/"
-		cd "$WDIR/output" #changed dir
-		lz4 -m *.lz4
-		rm *.lz4 #cleaning
-		fastbootd_function
-		tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img dt.img; rm *.img #cleaning
+		if [ "$PARTITION_SCHEME" == 1 ]; then
+			cd "$WDIR/Downloads" #changed dir
+			cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 "$WDIR/output/"
+			cd "$WDIR/output" #changed dir
+			lz4 -m *.lz4
+			rm *.lz4 #cleaning
+			fastbootd_function
+			tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img; rm *.img #cleaning
+		else
+			cd "$WDIR/Downloads" #changed dir
+			cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 dt.img.lz4 "$WDIR/output/"
+			cd "$WDIR/output" #changed dir
+			lz4 -m *.lz4
+			rm *.lz4 #cleaning
+			fastbootd_function
+			tar cvf "$BASE_TAR_NAME" boot.img vbmeta.img recovery.img dtbo.img dt.img; rm *.img #cleaning
+		fi
+		zip "${BASE_TAR_NAME}.zip" "$BASE_TAR_NAME"
+		rm "$BASE_TAR_NAME"
+		echo -e "\n\033[1;32m[i] Zip file created: ${BASE_TAR_NAME}.zip\033[0m"
 	fi
-	zip "${BASE_TAR_NAME}.zip" "$BASE_TAR_NAME"
-	rm "$BASE_TAR_NAME"
-	echo -e "\n\033[1;32m[i] Zip file created: ${BASE_TAR_NAME}.zip\033[0m"
 }
 
 ### EXTRACTING SYSTEM PARTITION ####
