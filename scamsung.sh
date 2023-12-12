@@ -90,10 +90,13 @@ is_dynamic(){
                     fi
                 }
 
-        else
-                echo "An Internal Error occured..!"
-                exit 1
-        fi
+    elif [ -e system.img ]; then
+    	is_legacy=1
+
+    else
+        echo "An Internal Error occured..!"
+        exit 1
+    fi
 }
 
 recovery_patch(){
@@ -160,8 +163,8 @@ base_files(){
 	legacy_check(){
 
 		cd "$WDIR/Downloads" #changed dir
-		if [ ! -e "vbmeta.img" ]; then
-			if [ ! -e "dtbo.img" ]; then
+		if [ ! -e "vbmeta.img.lz4" ]; then
+			if [ ! -e "dtbo.img.lz4" ]; then
 				is_legacy=1
 			fi
 		else
@@ -169,10 +172,9 @@ base_files(){
 		fi
 
 	}
-
 	legacy_check
 
-	if [ "$is_legacy" == 1 ]; then		
+	if [ "$is_legacy" == 1 ] && [ -e system.img.lz4 ]; then		
 		cd "$WDIR/Downloads" #changed dir
 		cp boot.img.lz4 recovery.img.lz4 "$WDIR/output/"
 		cd "$WDIR/output" #changed dir
@@ -180,8 +182,14 @@ base_files(){
 		rm *.lz4 #cleaning
 		fastbootd_function
 		tar cvf "$BASE_TAR_NAME" boot.img recovery.img ; rm *.img #cleaning
-	else
-		if [ "$PARTITION_SCHEME" == 1 ]; then
+	elif [ "$is_legacy" == 1 ] && [ -e system.img ]; then
+		cd "$WDIR/Downloads" #changed dir
+		cp boot.img recovery.img "$WDIR/output/"
+		cd "$WDIR/output" #changed dir
+		fastbootd_function
+		tar cvf "$BASE_TAR_NAME" boot.img recovery.img ; rm *.img #cleaning
+
+	elif [ "$PARTITION_SCHEME" == 1 ]; then
 			cd "$WDIR/Downloads" #changed dir
 			cp boot.img.lz4 vbmeta.img.lz4 recovery.img.lz4 dtbo.img.lz4 "$WDIR/output/"
 			cd "$WDIR/output" #changed dir
