@@ -21,7 +21,7 @@
 
 ## More features are coming soon.. <hr>
 ## How to run..? 🏃‍♂️
-#### 01. Open the Script in Google Colab : [![Colab for images](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ravindu644/Scamsung/blob/Samsung/Scamsung.ipynb)
+#### 01. Open the Script in Google Colab : [![Colab for images](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ravindu644/Scamsung/blob/beta/Scamsung.ipynb)
 #### 02. Press all the play buttons (▶️).
 #### 03. The script will ask you a firmware link. You must put a direct link for the full firmware package. I prefer samfw.com for this.
 - Open samfw.com.
