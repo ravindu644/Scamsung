@@ -191,8 +191,6 @@ base_files(){
 			echo "Skipping Fastbootd patch.."
 		fi
 	}
-	
-	legacy_check
 
 	if [ "$is_legacy" == 1 ] && [ -e system.img ]; then		
 		cd "$WDIR/Downloads" #changed dir
