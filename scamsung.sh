@@ -95,7 +95,7 @@ is_dynamic(){
                 	mv $IMG "$WDIR/super"
                 }
 
-	elif [ -e system.img ] && [ -e vendor.img ] ; then
+	elif [ -e system.img ] && [ -e vendor.img ]; then
 		PARTITION_SCHEME=2
         	echo -e "\033[1;32m[i] Non-Dynamic Partition Device Detected..!\033[0m"	
         	IMG="system.img"
@@ -191,19 +191,7 @@ base_files(){
 			echo "Skipping Fastbootd patch.."
 		fi
 	}
-
-	legacy_check(){
-
-		cd "$WDIR/Downloads" #changed dir
-		if [ ! -e "vbmeta.img.lz4" ]; then
-			if [ ! -e "dtbo.img.lz4" ]; then
-				is_legacy=1
-			fi
-		else
-			is_legacy=0
-		fi
-
-	}
+	
 	legacy_check
 
 	if [ "$is_legacy" == 1 ] && [ -e system.img ]; then		
