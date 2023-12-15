@@ -6,9 +6,9 @@ A simple way to root your Samsung device without wasting data and time... ❤️
 
 ## Quick Links 😌
 
-01. [Features](https://github.com/ravindu644/Scamsung#---features-%EF%B8%8F---)
-02. [How to run](https://github.com/ravindu644/Scamsung#how-to-run-%EF%B8%8F)
-03. [How to run the script on a VPS or locally (if you are rich 🗿)](https://github.com/ravindu644/Scamsung#how-to-run-the-script-on-a-vps-or-locally-if-you-are-rich-)
+01. [Features](https://github.com/ravindu644/Scamsung?tab=readme-ov-file#---features-%EF%B8%8F---)
+02. [How to run](https://github.com/ravindu644/Scamsung?tab=readme-ov-file#how-to-run-%EF%B8%8F)
+03. [How to run the script on a VPS or locally (if you are rich 🗿)](https://github.com/ravindu644/Scamsung?tab=readme-ov-file#how-to-run-the-script-on-a-vps-or-locally-if-you-are-rich-)
 04. [How to root your Samsung device with the help of my Script? [NO TWRP!]](https://github.com/ravindu644/Scamsung/wiki/How-to-root-your-Samsung-device-with-help-of-my-Script%3F-%5B-NO-TWRP-!-%5D) 😉 <hr>
 
 ## <i> - Features ⚡️ - </i>
