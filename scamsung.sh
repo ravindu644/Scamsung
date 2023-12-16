@@ -192,7 +192,7 @@ base_files(){
 		fi
 	}
 
-	if [ "$is_legacy" == 1 ] && [ -e system.img ]; then		
+	if [ "$is_legacy" == 1 ] && [ -e system.img ] || [ -e system.img.ext4 ]; then		
 		cd "$WDIR/Downloads" #changed dir
 		cp boot.img recovery.img "$WDIR/output/"
 		cd "$WDIR/output" #changed dir
