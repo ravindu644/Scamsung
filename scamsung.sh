@@ -105,7 +105,7 @@ is_dynamic(){
                         mv product.img "$WDIR/super"
                 }
 
-    elif [ -e system.img ] && [ ! -e vendor.img ] ; then
+    elif [ -e system.img ] || [ -e system.img.ext4 ] && [ ! -e vendor.img ] ; then
     	is_legacy=1
         CMD(){
         	echo -e "\n\033[1;32mCurrently only supports Base files extracting for Legacy Devices..!\033[0m\n"
